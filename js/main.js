@@ -28,7 +28,6 @@ function showFileDiv() {
   fileBtn.style.color = "orange";
 }
 
-
 let passwordInput = document.getElementById("passwordInput");
 
 loadSavedPassword();
@@ -85,12 +84,14 @@ function encryptDecryptText() {
   let resultData = resultTextarea.value;
   let password = passwordInput.value;
 
-  if (password && textData && !resultData) {
-    resultTextarea.value = encrypt(textData, password);
-  }
+  if (password) {
+    if (textData && !resultData) {
+      resultTextarea.value = encrypt(textData, password);
+    }
 
-  if (password && !textData && resultData) {
-    textTextarea.value = decrypt(resultData, password);
+    if (!textData && resultData) {
+      textTextarea.value = decrypt(resultData, password);
+    }
   }
 }
 
