@@ -4,23 +4,29 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" href="./css/main.css" />
+    <link rel="stylesheet" href="./src/css/main.css" />
 
     <script src="webxdc.js"></script>
   </head>
 
   <body>
     <p>
-      <button id="textBtn" class="w45">Text</button>
-      <button id="fileBtn" class="w45">File</button>
+      <button id="textBtn" class="w45">
+        <img src="./src/assets/imgs/align-left.svg" />
+        Text
+      </button>
+      <button id="fileBtn" class="w45">
+        <img src="./src/assets/imgs/file.svg" />
+        File
+      </button>
     </p>
 
     <p class="flex" id="passwordDiv">
       <input placeholder="Password" type="password" id="passwordInput" />
 
       <button id="passwordBtn">
-        <img id="eyeImg" src="./assets/imgs/eye.svg" />
-        <img id="eyeOffImg" src="./assets/imgs/eye-off.svg" hidden />
+        <img id="eyeImg" src="./src/assets/imgs/eye.svg" />
+        <img id="eyeOffImg" src="./src/assets/imgs/eye-off.svg" hidden />
       </button>
     </p>
 
@@ -30,40 +36,44 @@
 
         <div class="flex column">
           <button id="eraseTextBtn">
-            <img src="./assets/imgs/x.svg" />
+            <img src="./src/assets/imgs/x.svg" />
           </button>
 
           <button id="shareTextBtn">
-            <img src="./assets/imgs/share.svg" />
+            <img src="./src/assets/imgs/share.svg" />
           </button>
 
           <button id="copyTextBtn">
-            <img src="./assets/imgs/copy.svg" />
+            <img src="./src/assets/imgs/copy.svg" />
           </button>
         </div>
       </div>
 
       <p align="middle">
         <button id="encryptDecryptBtn">
-          <img src="./assets/imgs/up-down.svg" />
+          <img src="./src/assets/imgs/up-down.svg" />
           Encrypt/Decrypt
         </button>
       </p>
 
       <div class="flex">
-        <textarea id="resultTextarea" placeholder="Encrypted Text" rows="10"></textarea>
+        <textarea
+          id="resultTextarea"
+          placeholder="Encrypted Text"
+          rows="10"
+        ></textarea>
 
         <div class="flex column">
           <button id="eraseResultBtn">
-            <img src="./assets/imgs/x.svg" />
+            <img src="./src/assets/imgs/x.svg" />
           </button>
 
           <button id="shareResultBtn">
-            <img src="./assets/imgs/share.svg" />
+            <img src="./src/assets/imgs/share.svg" />
           </button>
 
           <button id="copyResultBtn">
-            <img src="./assets/imgs/copy.svg" />
+            <img src="./src/assets/imgs/copy.svg" />
           </button>
         </div>
       </div>
@@ -74,6 +84,6 @@
       <button id="decryptFileBtn" class="w45">Decrypt</button>
     </div>
 
-    <script type="module" src="./js/main.js"></script>
+    <script type="module" src="./src/js/main.js"></script>
   </body>
 </html>

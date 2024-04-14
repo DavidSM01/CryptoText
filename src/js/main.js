@@ -114,12 +114,17 @@ async function encryptFile() {
       let base64 = dataUrl.split(",")[1];
 
       let encryptedBase64 = encrypt(base64, password);
-      xdc.sendToChat({
-        file: {
-          name: fileName,
-          plainText: encryptedBase64,
-        },
-      });
+      try {
+        xdc.sendToChat({
+          file: {
+            name: fileName,
+            plainText: encryptedBase64,
+          },
+        });
+      } catch (err) {
+        console.log(err);
+        alert(err);
+      }
     };
   }
 }
@@ -135,12 +140,17 @@ async function decryptFile() {
     reader.onload = (event) => {
       let encryptedText = event.target.result;
       let base64 = decrypt(encryptedText, password);
-      xdc.sendToChat({
-        file: {
-          name: fileName,
-          base64: base64,
-        },
-      });
+      try {
+        xdc.sendToChat({
+          file: {
+            name: fileName,
+            base64: base64,
+          },
+        });
+      } catch (err) {
+        console.log(err);
+        alert(err);
+      }
     };
   }
 }
@@ -151,6 +161,7 @@ function encrypt(text, password) {
     return encryptedText;
   } catch (err) {
     console.log(err);
+    alert(err);
   }
 }
 
@@ -159,9 +170,10 @@ function decrypt(encryptedText, password) {
     let decryptedText = CryptoJS.AES.decrypt(encryptedText, password).toString(
       CryptoJS.enc.Utf8,
     );
-    return decryptedText;
+    if (decryptedText) return decryptedText;
   } catch (err) {
     console.log(err);
+    alert(err);
   }
 }
 
@@ -185,7 +197,7 @@ function eraseValue(elem) {
 }
 
 function shareText(text) {
-  xdc.sendToChat({ text: text });
+  if (text) xdc.sendToChat({ text: text });
 }
 
 function copy(text) {

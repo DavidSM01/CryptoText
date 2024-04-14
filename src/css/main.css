@@ -32,7 +32,6 @@ input {
 button {
   margin: 3px;
   color: var(--text-color, #000);
-  cursor: pointer;
 }
 
 button img {
