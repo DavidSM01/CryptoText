@@ -11,11 +11,11 @@
 
   <body>
     <p>
-      <button id="textBtn" class="w45">
+      <button id="textBtn" class="w45 active">
         <img src="./src/assets/imgs/align-left.svg" />
         Text
       </button>
-      <button id="fileBtn" class="w45">
+      <button id="fileBtn" class="w45 no-active">
         <img src="./src/assets/imgs/file.svg" />
         File
       </button>
@@ -34,7 +34,7 @@
       <div class="flex">
         <textarea id="textTextarea" placeholder="Text" rows="10"></textarea>
 
-        <p class="flex column">
+        <div class="flex column">
           <button id="eraseTextBtn">
             <img src="./src/assets/imgs/x.svg" />
           </button>
@@ -46,10 +46,10 @@
           <button id="copyTextBtn">
             <img src="./src/assets/imgs/copy.svg" />
           </button>
-        </p>
+        </div>
       </div>
 
-      <p align="middle">
+      <p class="center">
         <button id="encryptDecryptBtn">
           <img src="./src/assets/imgs/up-down.svg" />
           Encrypt/Decrypt
@@ -63,7 +63,7 @@
           rows="10"
         ></textarea>
 
-        <p class="flex column">
+        <div class="flex column">
           <button id="eraseResultBtn">
             <img src="./src/assets/imgs/x.svg" />
           </button>
@@ -75,11 +75,11 @@
           <button id="copyResultBtn">
             <img src="./src/assets/imgs/copy.svg" />
           </button>
-        </p>
+        </div>
       </div>
     </div>
 
-    <div id="fileDiv">
+    <div id="fileDiv" hidden>
       <button id="encryptFileBtn" class="w45">Encrypt</button>
       <button id="decryptFileBtn" class="w45">Decrypt</button>
     </div>

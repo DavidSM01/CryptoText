@@ -64,3 +64,17 @@ textarea {
 .w45 {
   width: 45%;
 }
+
+.center {
+  text-align: center;
+}
+
+.active {
+  color: orange;
+  border-color: orange;
+}
+
+.no-active {
+  color: grey;
+  border-color: grey;
+}

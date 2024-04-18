@@ -4,94 +4,67 @@
 // browsers. In an actual webxdc environment (e.g. Delta Chat messenger) this
 // file is not used and will automatically be replaced with a real one.
 // See https://docs.webxdc.org/spec.html#webxdc-api
+
 // debug friend: document.writeln(JSON.stringify(value));
-
-let __devices__ = [];
-
 //@ts-check
 /** @type {import('./webxdc').Webxdc<any>} */
 window.webxdc = (() => {
-
-  let currentUpdates = [];
-  let opener = window.opener;
-
-  let serveMsg = msg => {
-    let sender = msg.source;
-    let update = msg.data;
-
-    if (!opener && sender != window) {
-      __devices__.forEach(device => device.postMessage(update, '*'));
+  var updateListener = (_) => {};
+  var updatesKey = "__xdcUpdatesKey__";
+  window.addEventListener("storage", (event) => {
+    if (event.key == null) {
+      window.location.reload();
+    } else if (event.key === updatesKey) {
+      var updates = JSON.parse(event.newValue);
+      var update = updates[updates.length - 1];
+      update.max_serial = updates.length;
+      console.log("[Webxdc] " + JSON.stringify(update));
+      updateListener(update);
     }
+  });
+
+  function getUpdates() {
+    var updatesJSON = window.localStorage.getItem(updatesKey);
+    return updatesJSON ? JSON.parse(updatesJSON) : [];
   }
 
-  window.addEventListener('message', serveMsg);
-
-  let handleMsg = msg => {
-    let update = msg.data;
-
-    let serial = currentUpdates.length + 1;
-    update.serial = serial;
-    update.max_serial = serial;
-
-    currentUpdates.push(update);
-  }
-
-  window.addEventListener('message', handleMsg);
-
-
-  let loc = window.location;
-  let hostname = loc.hostname;
-  let peerId = (hostname.replace('localhost', '') || 'device0.').replace('.', '');
-
+  var params = new URLSearchParams(window.location.hash.substr(1));
   return {
-    selfAddr: peerId + '@local.host',
-    selfName: peerId,
-    setUpdateListener: (func, serial = 0) => {
-      var maxSerial = currentUpdates.length;
-      currentUpdates.forEach((update) => {
-        update.max_serial = maxSerial;
-        func(update);
+    selfAddr: params.get("addr") || "device0@local.host",
+    selfName: params.get("name") || "device0",
+    setUpdateListener: (cb, serial = 0) => {
+      var updates = getUpdates();
+      var maxSerial = updates.length;
+      updates.forEach((update) => {
+        if (update.serial > serial) {
+          update.max_serial = maxSerial;
+          cb(update);
+        }
       });
-
-
-      window.addEventListener('message', msg => {
-        let update = msg.data;
-        let serial = currentUpdates.length;
-        update.serial = serial
-        update.max_serial = serial;
-        console.log(update);
-        func(update);
-      });
-
+      updateListener = cb;
       return Promise.resolve();
     },
     getAllUpdates: () => {
       console.log("[Webxdc] WARNING: getAllUpdates() is deprecated.");
       return Promise.resolve([]);
     },
-    sendUpdate: (update, descr) => {
-      let _update = {
+    sendUpdate: (update, description) => {
+      var updates = getUpdates();
+      var serial = updates.length + 1;
+      var _update = {
         payload: update.payload,
         summary: update.summary,
         info: update.info,
         document: update.document,
+        serial: serial,
       };
-
-
-      let opener = window.opener;
-      if (opener) {
-        opener.postMessage(_update, '*');
-      } else {
-        window.postMessage(_update, '*');
-        __devices__.forEach(device => device.postMessage(_update, '*'));
-      }
-
+      updates.push(_update);
+      window.localStorage.setItem(updatesKey, JSON.stringify(updates));
+      _update.max_serial = serial;
       console.log(
-        `[Webxdc] [Update sended]
-Description: "${descr}",
-Update: ${JSON.stringify(_update)}`
+        '[Webxdc] description="' + description + '", ' + JSON.stringify(_update)
       );
-
+      updateListener(_update);
     },
     sendToChat: async (content) => {
       if (!content.file && !content.text) {
@@ -152,11 +125,13 @@ Update: ${JSON.stringify(_update)}`
           );
         }
       }
-      const msg = `The app would now close and the user would select a chat to send this message:\nText: ${content.text ? `"${content.text}"` : "No Text"
-        }\nFile: ${content.file
+      const msg = `The app would now close and the user would select a chat to send this message:\nText: ${
+        content.text ? `"${content.text}"` : "No Text"
+      }\nFile: ${
+        content.file
           ? `${content.file.name} - ${base64Content.length} bytes`
           : "No File"
-        }`;
+      }`;
       if (content.file) {
         const confirmed = confirm(
           msg + "\n\nDownload the file in the browser instead?"
@@ -202,40 +177,34 @@ Update: ${JSON.stringify(_update)}`
 })();
 
 window.addXdcPeer = () => {
+  var loc = window.location;
   // get next peer ID
-  let peerId = (Number(sessionStorage.getItem('peerId')) || 0) + 1;
-
-  // get new URL
-  let loc = window.location;
-  let hostname = loc.hostname;
-  let host = loc.host;
-
-  let subdomain = hostname.replace('localhost', '');
-  let newSubdomain = 'device' +
-    peerId + '.';
-
-  let newHostname = hostname.replace(subdomain, newSubdomain);
-  let newHost = host.replace(hostname, newHostname);
-
-  let url =
-    loc.protocol +
-    "//" +
-    newHost +
-    loc.pathname;
+  var params = new URLSearchParams(loc.hash.substr(1));
+  var peerId = Number(params.get("next_peer")) || 1;
 
   // open a new window
-  let device = window.open(url);
-  __devices__.push(device);
-  sessionStorage.setItem('peerId', String(peerId));
+  var peerName = "device" + peerId;
+  var url =
+    loc.protocol +
+    "//" +
+    loc.host +
+    loc.pathname +
+    "#name=" +
+    peerName +
+    "&addr=" +
+    peerName +
+    "@local.host";
+  window.open(url);
 
+  // update next peer ID
+  params.set("next_peer", String(peerId + 1));
+  window.location.hash = "#" + params.toString();
 };
-
 
 window.clearXdcStorage = () => {
   window.localStorage.clear();
   window.location.reload();
 };
-
 
 window.alterXdcApp = () => {
   var styleControlPanel =
@@ -276,7 +245,7 @@ window.alterXdcApp = () => {
         root.innerHTML =
           '<img src="' + name + '" style="' + styleAppIcon + '">';
         controlPanel.insertBefore(root.firstChild, controlPanel.childNodes[1]);
-
+        
         var pageIcon = document.createElement('link');
         pageIcon.rel = "icon";
         pageIcon.href = name;
